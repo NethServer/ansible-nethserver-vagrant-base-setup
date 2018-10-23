@@ -1,0 +1,24 @@
+---
+- block:
+    - name: Disable nethserver phonehome
+      command: /sbin/e-smith/config setprop phone-home status disable
+    - name: signal-event nethserver-phonehome-update
+      command: /sbin/e-smith/signal-event nethserver-phonehome-update
+  when:  nethserver_config | json_query('[?name==`phone-home`].props.status | [0]') == 'enabled'
+
+- block:
+    - name: Set FQDN
+      hostname:
+        name: "{{ nethserver_hostname }}"
+      register: _nethserver_fqdn
+    - name: signal-event hostname-modify
+      command: /sbin/e-smith/signal-event hostname-modify
+      when: _nethserver_fqdn.changed
+  when:  nethserver_config | json_query('[?name==`sssd`].props.status | [0]') == 'disabled'
+
+- block:
+    - name: disable first config wirzard
+      command: /sbin/e-smith/config setprop httpd-admin ForcedLoginModule ''''
+    - name: signal-event nethserver-httpd-admin-update
+      command: /sbin/e-smith/signal-event nethserver-httpd-admin-update
+  when:  nethserver_config | json_query('[?name==`httpd-admin`].props.ForcedLoginModule | [0]') == 'FirstConfigWiz'

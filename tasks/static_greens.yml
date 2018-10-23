@@ -1,0 +1,12 @@
+- import_role:
+    name: amygos.nethserver_esmith
+
+- name: Make static all green interfaces
+  command: "/sbin/e-smith/db networks set {{ item.name }} ethernet role green bootproto none ipaddr {{ item.props.ipaddr }} netmask {{ item.props.netmask }}"
+  loop: "{{ nethserver_networks | json_query('[?props.role==`green`]') }}"
+  when: item.props.bootproto == "dhcp"
+  register: _nethserver_green_interfaces
+
+- name: signal-event interface-update
+  command: /sbin/e-smith/signal-event interface-update
+  when: _nethserver_green_interfaces.changed

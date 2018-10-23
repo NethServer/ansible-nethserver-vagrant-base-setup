@@ -1,0 +1,14 @@
+---
+- block:
+    - name: Configure second interface as green with bootproto dhcp
+      command: "/sbin/e-smith/db networks set {{ nethserver_networks | json_query('[1].name') }}  ethernet role green bootproto dhcp"
+    - name: signal-event interface-update
+      command: /sbin/e-smith/signal-event interface-update
+  when:  nethserver_networks | json_query('[1].props.role') == ""
+
+- block:
+    - name: Configure first interface as red
+      command: "/sbin/e-smith/db networks set {{ nethserver_networks | json_query('[0].name') }} ethernet role red bootproto dhcp"
+    - name: signal-event interface-update
+      command: /sbin/e-smith/signal-event interface-update
+  when: (nethserver_networks | json_query('[0].props.role') != 'red') and (nethsever_networks | json_query('[0].type') != 'bridge')

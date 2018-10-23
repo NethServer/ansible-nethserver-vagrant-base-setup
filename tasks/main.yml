@@ -1,0 +1,20 @@
+---
+- name: Check if first setup was already done
+  command: /sbin/e-smith/db qa getprop vagrant first-setup
+  ignore_errors: true
+  register: system_configured
+
+- block:
+    - import_role:
+       name: amygos.nethserver_esmith
+
+    - include_tasks: base-configs.yml
+
+    - include_tasks: networks.yml
+
+    - include_tasks: static_greens.yml
+      when: static_greens
+
+    - name: Mark system as configured
+      command: /sbin/e-smith/db qa set vagrant config first-setup false
+  when: system_configured.failed

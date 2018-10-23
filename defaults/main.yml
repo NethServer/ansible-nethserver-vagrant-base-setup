@@ -1,0 +1,4 @@
+---
+static_greens: true
+
+nethserver_hostname: "qa.sever.neth"

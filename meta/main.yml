@@ -1,0 +1,9 @@
+galaxy_info:
+  role_name: nethserver_vagrant_base_setup
+  author: Matteo Valentini
+  description: Role for Nethserver vagrant base setup steps
+  license: MIT
+  min_ansible_version: 2.6
+
+dependencies:
+  - amygos.nethserver_esmith
